@@ -5,19 +5,39 @@ import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
     private String[] permissions;
-
+    FloatingActionButton mAddFab;
+    Button mAddButton;
+    EditText mEditTextPhone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAddFab = findViewById(R.id.add_blck_fab);
+
+        mAddFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showBottomSheetDialog();
+            }
+        });
 
         permissions = new String[]{
                 Manifest.permission.READ_CONTACTS,
@@ -33,6 +53,28 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(MainActivity.this,permissions,permission_All);
         }
 
+    }
+
+    private void showBottomSheetDialog() {
+
+        final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        bottomSheetDialog.setContentView(R.layout.bottom_sheet_layout);
+        mAddButton =bottomSheetDialog.findViewById(R.id.btnAddBlk);
+        mEditTextPhone =bottomSheetDialog.findViewById(R.id.edtTxtPhone);
+
+        mAddButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent bundle = getIntent().putExtra("block_number",mEditTextPhone.getText());
+//                bundle.putExtra("block_number",mEditTextPhone.getText());
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putString("block_number", String.valueOf(mEditTextPhone.getText()));
+                editor.apply();
+                Toast.makeText(getApplicationContext(),mEditTextPhone.getText()+" Blocked",Toast.LENGTH_LONG).show();
+            }
+        });
+        bottomSheetDialog.show();
     }
 
 
